@@ -27,4 +27,16 @@ public record Session(
             .build();
     }
 
+    public void checkBlocked() {
+        if (isBlock()) {
+            throw new UnauthorizedException();
+        }
+    }
+
+    public void checkExpired(Long currentTime) {
+        if (currentTime > expireTime) {
+            throw new UnauthorizedException();
+        }
+    }
+
 }

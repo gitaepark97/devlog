@@ -21,7 +21,7 @@ class Config {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(HttpMethod.GET, "/", "/docs/**")
                 .permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/*/auth/register", "/api/*/auth/login")
+                .requestMatchers(HttpMethod.POST, "/api/*/auth/register", "/api/*/auth/login", "/api/*/auth/token")
                 .permitAll()
                 .anyRequest()
                 .authenticated())

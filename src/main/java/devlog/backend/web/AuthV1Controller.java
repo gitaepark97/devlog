@@ -12,10 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,6 +31,15 @@ class AuthV1Controller {
     @PostMapping("/login")
     ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         Token token = authService.login(request.email(), request.password());
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .header(HttpHeaders.SET_COOKIE, setRefreshTokenCookie(token.refreshToken()))
+            .body(LoginResponse.from(token));
+    }
+
+    @PostMapping("/token")
+    ResponseEntity<LoginResponse> reissueToken(@CookieValue(REFRESH_TOKEN_KEY) String refreshToken) {
+        Token token = authService.reissueToken(refreshToken);
 
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, setRefreshTokenCookie(token.refreshToken()))

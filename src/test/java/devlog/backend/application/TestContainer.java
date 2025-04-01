@@ -20,6 +20,10 @@ public final class TestContainer {
         encoderProvider,
         loginInfoRepository
     );
+    private final SessionReader sessionReader = new SessionReader(
+        clockProvider,
+        sessionRepository
+    );
     private final UserWriter userWriter = new UserWriter(
         idProvider,
         clockProvider,
@@ -43,6 +47,7 @@ public final class TestContainer {
 
     private final AuthService authService = new AuthService(
         loginInfoReader,
+        sessionReader,
         userWriter,
         loginInfoWriter,
         sessionWriter,

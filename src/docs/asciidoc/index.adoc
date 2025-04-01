@@ -27,3 +27,14 @@ include::{snippets}/login/request-fields.adoc[]
 
 include::{snippets}/login/http-response.adoc[]
 include::{snippets}/login/response-fields.adoc[]
+
+=== 토큰 재발급
+
+==== 요청
+
+include::{snippets}/reissue-token/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/reissue-token/http-response.adoc[]
+include::{snippets}/reissue-token/response-fields.adoc[]

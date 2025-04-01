@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final LoginInfoReader loginInfoReader;
+    private final SessionReader sessionReader;
     private final UserWriter userWriter;
     private final LoginInfoWriter loginInfoWriter;
     private final SessionWriter sessionWriter;
@@ -35,7 +36,15 @@ public class AuthService {
         Session newSession = sessionWriter.create(userId);
 
         // 토큰 발급
-        return tokenProcessor.issueToken(userId, newSession);
+        return tokenProcessor.issueToken(newSession);
+    }
+
+    public Token reissueToken(String refreshToken) {
+        // 세션 조회
+        Session existingSession = sessionReader.read(refreshToken);
+
+        // 토큰 발급
+        return tokenProcessor.issueToken(existingSession);
     }
 
 }

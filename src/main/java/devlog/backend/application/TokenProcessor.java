@@ -16,10 +16,10 @@ class TokenProcessor {
 
     private final TokenProvider tokenProvider;
 
-    Token issueToken(Long userId, Session session) {
+    Token issueToken(Session session) {
         return new Token(
             // access token 발급
-            tokenProvider.issueToken(Map.of("userId", userId.toString()), ACCESS_TOKEN_DURATION),
+            tokenProvider.issueToken(Map.of("userId", session.userId().toString()), ACCESS_TOKEN_DURATION),
             // 세션 token 사용
             session.token()
         );

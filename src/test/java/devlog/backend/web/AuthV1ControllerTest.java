@@ -7,6 +7,7 @@ import devlog.backend.application.TestContainer;
 import devlog.backend.support.api.ApiResponseHandler;
 import devlog.backend.web.request.LoginRequest;
 import devlog.backend.web.request.RegisterRequest;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Objects;
 
 import static devlog.backend.application.fake.FakeTokenProvider.EXAMPLE_TOKEN;
 import static devlog.backend.application.fake.FakeUUIDProvider.EXAMPLE_UUID;
@@ -46,7 +49,7 @@ class AuthV1ControllerTest {
     }
 
     @Test
-    void register_success() throws Exception {
+    void register() throws Exception {
         // given
         RegisterRequest registerRequest = new RegisterRequest(
             "test@example.com",
@@ -84,7 +87,7 @@ class AuthV1ControllerTest {
     }
 
     @Test
-    void login_success() throws Exception {
+    void login() throws Exception {
         // given
         LoginRequest loginRequest = new LoginRequest(
             "test@example.com",
@@ -114,6 +117,44 @@ class AuthV1ControllerTest {
                         fieldWithPath("email").description("이메일"),
                         fieldWithPath("password").description("비밀번호")
                     ),
+                    responseFields(
+                        fieldWithPath("status").description("상태"),
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data.token").description("토큰")
+                    )
+                )
+            );
+    }
+
+    @Test
+    void reissueToken() throws Exception {
+        // given
+        authService.register("test@example.com", "Qwer1234!", "test");
+        ResultActions loginResponse = mockMvc.perform(
+            post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new LoginRequest("test@example.com", "Qwer1234!")))
+        );
+        String refreshToken = Objects.requireNonNull(loginResponse.andReturn().getResponse().getCookie("refreshToken"))
+            .getValue();
+
+        // when
+        ResultActions response = mockMvc.perform(
+            post("/api/v1/auth/token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("refreshToken", refreshToken))
+        );
+
+        // then
+        response.andExpect(status().isOk())
+            .andExpect(cookie().value("refreshToken", EXAMPLE_UUID))
+            .andExpect(jsonPath("$.status").value("OK"))
+            .andExpect(jsonPath("$.message").value("성공"))
+            .andExpect(jsonPath("$.data.token").value(EXAMPLE_TOKEN))
+            .andDo(
+                document("reissue-token",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
                     responseFields(
                         fieldWithPath("status").description("상태"),
                         fieldWithPath("message").description("메세지"),
