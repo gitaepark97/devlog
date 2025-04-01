@@ -23,4 +23,12 @@ public class FakeSessionRepository implements SessionRepository {
         sessions.put(session.id(), session);
     }
 
+    @Override
+    public void deleteByUserId(Long userId) {
+        sessions.values().stream()
+            .filter(session -> session.userId().equals(userId))
+            .findFirst()
+            .ifPresent(session -> sessions.remove(session.id()));
+    }
+
 }

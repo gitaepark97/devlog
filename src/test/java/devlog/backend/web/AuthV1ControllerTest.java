@@ -3,26 +3,27 @@ package devlog.backend.web;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import devlog.backend.application.AuthService;
-import devlog.backend.application.TestContainer;
-import devlog.backend.support.api.ApiResponseHandler;
+import devlog.backend.application.dto.Token;
 import devlog.backend.web.request.LoginRequest;
 import devlog.backend.web.request.RegisterRequest;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Objects;
-
-import static devlog.backend.application.fake.FakeTokenProvider.EXAMPLE_TOKEN;
-import static devlog.backend.application.fake.FakeUUIDProvider.EXAMPLE_UUID;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -30,20 +31,24 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(AuthV1Controller.class)
 @ExtendWith(RestDocumentationExtension.class)
 class AuthV1ControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @MockitoBean
     private AuthService authService;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void init(RestDocumentationContextProvider provider) {
         objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        TestContainer container = new TestContainer();
-        authService = container.getAuthService();
-        mockMvc = MockMvcBuilders.standaloneSetup(new AuthV1Controller(authService))
-            .setControllerAdvice(new ApiResponseHandler())
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .apply(documentationConfiguration(provider))
             .build();
     }
@@ -88,13 +93,14 @@ class AuthV1ControllerTest {
 
     @Test
     void login() throws Exception {
+        when(authService.login(anyString(), anyString()))
+            .thenReturn(new Token("accessToken", "refreshToken"));
+
         // given
         LoginRequest loginRequest = new LoginRequest(
             "test@example.com",
             "Qwer1234!"
         );
-
-        authService.register(loginRequest.email(), loginRequest.password(), "test");
 
         // when
         ResultActions response = mockMvc.perform(
@@ -105,10 +111,10 @@ class AuthV1ControllerTest {
 
         // then
         response.andExpect(status().isOk())
-            .andExpect(cookie().value("refreshToken", EXAMPLE_UUID))
+            .andExpect(cookie().value("refreshToken", "refreshToken"))
             .andExpect(jsonPath("$.status").value("OK"))
             .andExpect(jsonPath("$.message").value("성공"))
-            .andExpect(jsonPath("$.data.token").value(EXAMPLE_TOKEN))
+            .andExpect(jsonPath("$.data.token").value("accessToken"))
             .andDo(
                 document("login",
                     preprocessRequest(prettyPrint()),
@@ -128,29 +134,25 @@ class AuthV1ControllerTest {
 
     @Test
     void reissueToken() throws Exception {
+        when(authService.reissueToken(anyString()))
+            .thenReturn(new Token("accessToken", "refreshToken"));
+
         // given
         authService.register("test@example.com", "Qwer1234!", "test");
-        ResultActions loginResponse = mockMvc.perform(
-            post("/api/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new LoginRequest("test@example.com", "Qwer1234!")))
-        );
-        String refreshToken = Objects.requireNonNull(loginResponse.andReturn().getResponse().getCookie("refreshToken"))
-            .getValue();
 
         // when
         ResultActions response = mockMvc.perform(
             post("/api/v1/auth/token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie("refreshToken", refreshToken))
+                .cookie(new Cookie("refreshToken", "refreshToken"))
         );
 
         // then
         response.andExpect(status().isOk())
-            .andExpect(cookie().value("refreshToken", EXAMPLE_UUID))
+            .andExpect(cookie().value("refreshToken", "refreshToken"))
             .andExpect(jsonPath("$.status").value("OK"))
             .andExpect(jsonPath("$.message").value("성공"))
-            .andExpect(jsonPath("$.data.token").value(EXAMPLE_TOKEN))
+            .andExpect(jsonPath("$.data.token").value("accessToken"))
             .andDo(
                 document("reissue-token",
                     preprocessRequest(prettyPrint()),
@@ -159,6 +161,32 @@ class AuthV1ControllerTest {
                         fieldWithPath("status").description("상태"),
                         fieldWithPath("message").description("메세지"),
                         fieldWithPath("data.token").description("토큰")
+                    )
+                )
+            );
+    }
+
+    @Test
+    void logout() throws Exception {
+        // given
+        authService.register("test@example.com", "Qwer1234!", "test");
+
+        // when
+        ResultActions response = mockMvc.perform(
+            post("/api/v1/auth/logout")
+        );
+
+        // then
+        response.andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("OK"))
+            .andExpect(jsonPath("$.message").value("성공"))
+            .andDo(
+                document("reissue-token",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("status").description("상태"),
+                        fieldWithPath("message").description("메세지")
                     )
                 )
             );

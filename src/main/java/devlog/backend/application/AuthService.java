@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class AuthService {
@@ -45,6 +47,15 @@ public class AuthService {
 
         // 토큰 발급
         return tokenProcessor.issueToken(existingSession);
+    }
+
+    public void logout(Long userId) {
+        // 세션 삭제
+        sessionWriter.delete(userId);
+    }
+
+    public Optional<Long> getUserId(String accessToken) {
+        return tokenProcessor.getUserId(accessToken);
     }
 
 }

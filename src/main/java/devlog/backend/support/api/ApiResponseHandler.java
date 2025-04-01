@@ -2,6 +2,7 @@ package devlog.backend.support.api;
 
 import devlog.backend.support.exception.ApplicationException;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -23,12 +24,12 @@ import java.util.Map;
 
 @RestControllerAdvice(basePackages = "devlog.backend.web", basePackageClasses = ApiResponseHandler.class)
 @Slf4j
-public class ApiResponseHandler implements ResponseBodyAdvice<Object> {
+class ApiResponseHandler implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(
         @Nullable MethodParameter returnType,
-        @Nullable Class<? extends HttpMessageConverter<?>> converterType
+        @NotNull Class<? extends HttpMessageConverter<?>> converterType
     ) {
         return MappingJackson2HttpMessageConverter.class.isAssignableFrom(converterType);
     }
@@ -36,11 +37,11 @@ public class ApiResponseHandler implements ResponseBodyAdvice<Object> {
     @Override
     public ApiResponse<?> beforeBodyWrite(
         Object body,
-        @Nullable MethodParameter returnType,
+        @NotNull MethodParameter returnType,
         @Nullable MediaType selectedContentType,
         @Nullable Class<? extends HttpMessageConverter<?>> selectedConverterType,
         @Nullable ServerHttpRequest request,
-        @Nullable ServerHttpResponse response
+        @NotNull ServerHttpResponse response
     ) {
         if (body instanceof ApiResponse<?> apiResponse) {
             response.setStatusCode(apiResponse.status());

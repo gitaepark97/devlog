@@ -25,4 +25,9 @@ class SessionRepositoryImpl implements SessionRepository {
         sessionEntityRepository.save(SessionEntity.from(session));
     }
 
+    @Override
+    public void deleteByUserId(Long userId) {
+        sessionEntityRepository.deleteByUserId(userId);
+    }
+
 }

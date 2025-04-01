@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -44,6 +45,11 @@ class AuthV1Controller {
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, setRefreshTokenCookie(token.refreshToken()))
             .body(LoginResponse.from(token));
+    }
+
+    @PostMapping("/logout")
+    void logout(@AuthenticationPrincipal Long userId) {
+        authService.logout(userId);
     }
 
     private String setRefreshTokenCookie(String refreshToken) {

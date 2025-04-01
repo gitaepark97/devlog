@@ -40,4 +40,4 @@ logging:
     sql: error
 
 jwt:
-  secret: secret
+  secret: d0e5344755b504e561cc3da9a74082e26c8b7

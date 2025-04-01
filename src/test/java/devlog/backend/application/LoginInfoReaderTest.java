@@ -14,8 +14,8 @@ class LoginInfoReaderTest {
     @BeforeEach
     void init() {
         TestContainer container = new TestContainer();
-        loginInfoWriter = container.getLoginInfoWriter();
         loginInfoReader = container.getLoginInfoReader();
+        loginInfoWriter = container.getLoginInfoWriter();
     }
 
     @Test

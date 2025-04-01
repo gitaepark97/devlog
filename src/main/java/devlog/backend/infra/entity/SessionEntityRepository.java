@@ -8,4 +8,6 @@ public interface SessionEntityRepository extends JpaRepository<SessionEntity, Lo
 
     Optional<SessionEntity> findByToken(String token);
 
+    void deleteByUserId(Long userId);
+
 }

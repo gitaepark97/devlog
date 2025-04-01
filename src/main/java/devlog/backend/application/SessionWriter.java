@@ -3,6 +3,7 @@ package devlog.backend.application;
 import devlog.backend.domain.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -24,6 +25,11 @@ class SessionWriter {
         sessionRepository.save(newSession);
 
         return newSession;
+    }
+
+    @Transactional
+    void delete(Long userId) {
+        sessionRepository.deleteByUserId(userId);
     }
 
 }
