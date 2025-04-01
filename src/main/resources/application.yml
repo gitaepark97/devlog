@@ -3,8 +3,12 @@ spring:
     name: devlog-backend
   profiles:
     active: local
+
   jpa:
     open-in-view: false
+  sql:
+    init:
+      mode: always
 
 ---
 spring:
@@ -24,3 +28,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+logging:
+  level:
+    sql: error
+
+jwt:
+  secret: secret
