@@ -37,7 +37,7 @@ class AuthV1Controller {
 
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, setRefreshTokenCookie(token.refreshToken()))
-            .body(new LoginResponse(token.accessToken()));
+            .body(LoginResponse.from(token));
     }
 
     private String setRefreshTokenCookie(String refreshToken) {
