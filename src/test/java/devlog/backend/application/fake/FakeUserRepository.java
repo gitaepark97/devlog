@@ -11,6 +11,11 @@ public class FakeUserRepository implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
 
     @Override
+    public boolean existsById(Long userId) {
+        return users.containsKey(userId);
+    }
+
+    @Override
     public boolean existsByEmail(String email) {
         return users.values().stream()
             .anyMatch(user -> user.email().equals(email));

@@ -1,62 +1,37 @@
 package devlog.backend.web;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import devlog.backend.application.AuthService;
 import devlog.backend.application.dto.Token;
 import devlog.backend.web.request.LoginRequest;
 import devlog.backend.web.request.PasswordUpdateRequest;
 import devlog.backend.web.request.RegisterRequest;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthV1Controller.class)
 @ExtendWith(RestDocumentationExtension.class)
-class AuthV1ControllerTest {
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    private WebApplicationContext context;
+class AuthV1ControllerTest extends TestController {
 
     @MockitoBean
     private AuthService authService;
-
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    void init(RestDocumentationContextProvider provider) {
-        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-            .apply(documentationConfiguration(provider))
-            .build();
-    }
 
     @Test
     void register() throws Exception {
@@ -98,14 +73,13 @@ class AuthV1ControllerTest {
 
     @Test
     void login() throws Exception {
-        when(authService.login(anyString(), anyString()))
-            .thenReturn(new Token("accessToken", "refreshToken"));
-
         // given
         LoginRequest loginRequest = new LoginRequest(
             "test@example.com",
             "Qwer1234!"
         );
+        when(authService.login(anyString(), anyString()))
+            .thenReturn(new Token("accessToken", "refreshToken"));
 
         // when
         ResultActions response = mockMvc.perform(
@@ -139,10 +113,9 @@ class AuthV1ControllerTest {
 
     @Test
     void reissueToken() throws Exception {
+        // given
         when(authService.reissueToken(anyString()))
             .thenReturn(new Token("accessToken", "refreshToken"));
-
-        // given
 
         // when
         ResultActions response = mockMvc.perform(
@@ -171,13 +144,13 @@ class AuthV1ControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "1")
     void logout() throws Exception {
         // given
 
         // when
         ResultActions response = mockMvc.perform(
             post("/api/v1/auth/logout")
+                .with(authentication(authentication))
                 .header("Authorization", "Bearer token")
         );
 
@@ -199,7 +172,6 @@ class AuthV1ControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "1")
     void updatePassword() throws Exception {
         // given
         PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest(
@@ -210,6 +182,7 @@ class AuthV1ControllerTest {
         // when
         ResultActions response = mockMvc.perform(
             put("/api/v1/auth/password")
+                .with(authentication(authentication))
                 .header("Authorization", "Bearer token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(passwordUpdateRequest))

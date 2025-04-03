@@ -16,15 +16,10 @@ public class SessionEntity {
 
     @Id
     private Long id;
-
     private Long userId;
-
     private String token;
-
     private Boolean isBlock;
-
     private Long expireTime;
-
     private Long createTime;
 
     public static SessionEntity from(Session session) {

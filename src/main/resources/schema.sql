@@ -25,3 +25,12 @@ create table if not exists session (
     expire_time bigint       not null,
     create_time bigint       not null
 );
+
+create table if not exists article (
+    id          bigint       not null   primary key,
+    writer_id   bigint       not null,
+    title       varchar(50)  not null,
+    content     text         not null,
+    create_time bigint       not null,
+    update_time bigint       not null
+);

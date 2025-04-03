@@ -14,6 +14,11 @@ class UserRepositoryImpl implements UserRepository {
     private final UserEntityRepository userEntityRepository;
 
     @Override
+    public boolean existsById(Long userId) {
+        return userEntityRepository.existsById(userId);
+    }
+
+    @Override
     public boolean existsByEmail(String email) {
         return userEntityRepository.existsByEmail(email);
     }

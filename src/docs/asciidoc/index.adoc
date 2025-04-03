@@ -48,6 +48,7 @@ include::{snippets}/logout/http-request.adoc[]
 ==== 응답
 
 include::{snippets}/logout/http-response.adoc[]
+include::{snippets}/logout/request-headers.adoc[]
 include::{snippets}/logout/response-fields.adoc[]
 
 === 비밀번호 변경
@@ -55,9 +56,25 @@ include::{snippets}/logout/response-fields.adoc[]
 ==== 요청
 
 include::{snippets}/update-password/http-request.adoc[]
+include::{snippets}/update-password/request-headers.adoc[]
 include::{snippets}/update-password/request-fields.adoc[]
 
 ==== 응답
 
 include::{snippets}/update-password/http-response.adoc[]
 include::{snippets}/update-password/response-fields.adoc[]
+
+== Article
+
+=== 게시글 작성
+
+==== 요청
+
+include::{snippets}/create-article/http-request.adoc[]
+include::{snippets}/create-article/request-headers.adoc[]
+include::{snippets}/create-article/request-fields.adoc[]
+
+==== 응답
+
+include::{snippets}/create-article/http-response.adoc[]
+include::{snippets}/create-article/response-fields.adoc[]

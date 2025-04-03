@@ -16,13 +16,9 @@ public class UserEntity {
 
     @Id
     private Long id;
-
     private String email;
-
     private String username;
-
     private Long createTime;
-
     private Long updateTime;
 
     public static UserEntity from(User user) {

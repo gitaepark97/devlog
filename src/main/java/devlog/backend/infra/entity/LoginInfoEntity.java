@@ -21,18 +21,12 @@ public class LoginInfoEntity {
 
     @Id
     private Long id;
-
     @Enumerated(EnumType.STRING)
     private LoginMethod loginMethod;
-
     private String loginKey;
-
     private String password;
-
     private Long userId;
-
     private Long createTime;
-
     private Long updateTime;
 
     public static LoginInfoEntity from(LoginInfo loginInfo) {
