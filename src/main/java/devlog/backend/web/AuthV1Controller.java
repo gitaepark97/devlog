@@ -4,6 +4,7 @@ import devlog.backend.application.AuthService;
 import devlog.backend.application.dto.Token;
 import devlog.backend.domain.Session;
 import devlog.backend.web.request.LoginRequest;
+import devlog.backend.web.request.PasswordUpdateRequest;
 import devlog.backend.web.request.RegisterRequest;
 import devlog.backend.web.response.LoginResponse;
 import jakarta.validation.Valid;
@@ -50,6 +51,11 @@ class AuthV1Controller {
     @PostMapping("/logout")
     void logout(@AuthenticationPrincipal Long userId) {
         authService.logout(userId);
+    }
+
+    @PutMapping("/password")
+    void updatePassword(@AuthenticationPrincipal Long userId, @Valid @RequestBody PasswordUpdateRequest request) {
+        authService.updatePassword(userId, request.oldPassword(), request.newPassword());
     }
 
     private String setRefreshTokenCookie(String refreshToken) {

@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface LoginInfoEntityRepository extends JpaRepository<LoginInfoEntity, Long> {
 
+    Optional<LoginInfoEntity> findByLoginMethodAndUserId(LoginMethod loginMethod, Long userId);
+    
     Optional<LoginInfoEntity> findByLoginMethodAndLoginKey(LoginMethod loginMethod, String loginKey);
 
 }

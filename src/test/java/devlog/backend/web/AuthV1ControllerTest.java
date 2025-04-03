@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import devlog.backend.application.AuthService;
 import devlog.backend.application.dto.Token;
 import devlog.backend.web.request.LoginRequest;
+import devlog.backend.web.request.PasswordUpdateRequest;
 import devlog.backend.web.request.RegisterRequest;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,11 +26,14 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthV1Controller.class)
@@ -138,7 +143,6 @@ class AuthV1ControllerTest {
             .thenReturn(new Token("accessToken", "refreshToken"));
 
         // given
-        authService.register("test@example.com", "Qwer1234!", "test");
 
         // when
         ResultActions response = mockMvc.perform(
@@ -167,13 +171,14 @@ class AuthV1ControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "1")
     void logout() throws Exception {
         // given
-        authService.register("test@example.com", "Qwer1234!", "test");
 
         // when
         ResultActions response = mockMvc.perform(
             post("/api/v1/auth/logout")
+                .header("Authorization", "Bearer token")
         );
 
         // then
@@ -181,9 +186,48 @@ class AuthV1ControllerTest {
             .andExpect(jsonPath("$.status").value("OK"))
             .andExpect(jsonPath("$.message").value("성공"))
             .andDo(
-                document("reissue-token",
+                document("logout",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
+                    requestHeaders(headerWithName("Authorization").description("Bearer Token")),
+                    responseFields(
+                        fieldWithPath("status").description("상태"),
+                        fieldWithPath("message").description("메세지")
+                    )
+                )
+            );
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    void updatePassword() throws Exception {
+        // given
+        PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest(
+            "Qwer1234!",
+            "qWer1234!"
+        );
+
+        // when
+        ResultActions response = mockMvc.perform(
+            put("/api/v1/auth/password")
+                .header("Authorization", "Bearer token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(passwordUpdateRequest))
+        );
+
+        // then
+        response.andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("OK"))
+            .andExpect(jsonPath("$.message").value("성공"))
+            .andDo(
+                document("update-password",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(headerWithName("Authorization").description("Bearer Token")),
+                    requestFields(
+                        fieldWithPath("oldPassword").description("기존 비밀번호"),
+                        fieldWithPath("newPassword").description("신규 비밀번호")
+                    ),
                     responseFields(
                         fieldWithPath("status").description("상태"),
                         fieldWithPath("message").description("메세지")

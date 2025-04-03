@@ -17,6 +17,12 @@ class LoginInfoRepositoryImpl implements LoginInfoRepository {
     private final LoginInfoEntityRepository loginInfoEntityRepository;
 
     @Override
+    public Optional<LoginInfo> findByLoginMethodAndUserId(LoginMethod loginMethod, Long userId) {
+        return loginInfoEntityRepository.findByLoginMethodAndUserId(loginMethod, userId)
+            .map(LoginInfoEntity::toLoginInfo);
+    }
+
+    @Override
     public Optional<LoginInfo> findByLoginMethodAndLoginKey(LoginMethod loginMethod, String loginKey) {
         return loginInfoEntityRepository.findByLoginMethodAndLoginKey(loginMethod, loginKey)
             .map(LoginInfoEntity::toLoginInfo);

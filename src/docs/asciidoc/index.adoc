@@ -38,3 +38,26 @@ include::{snippets}/reissue-token/http-request.adoc[]
 
 include::{snippets}/reissue-token/http-response.adoc[]
 include::{snippets}/reissue-token/response-fields.adoc[]
+
+=== 로그아웃
+
+==== 요청
+
+include::{snippets}/logout/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/logout/http-response.adoc[]
+include::{snippets}/logout/response-fields.adoc[]
+
+=== 비밀번호 변경
+
+==== 요청
+
+include::{snippets}/update-password/http-request.adoc[]
+include::{snippets}/update-password/request-fields.adoc[]
+
+==== 응답
+
+include::{snippets}/update-password/http-response.adoc[]
+include::{snippets}/update-password/response-fields.adoc[]

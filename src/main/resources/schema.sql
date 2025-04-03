@@ -13,14 +13,15 @@ create table if not exists login_info (
     password     varchar(255)   null,
     user_id      bigint         not null,
     create_time  bigint         not null,
+    update_time  bigint         not null,
     unique(login_method, login_key)
 );
 
 create table if not exists session (
     id          bigint       not null   primary key,
-    user_id     bigint       not null,
+    user_id     bigint       not null   unique,
     token       varchar(255) not null   unique,
     is_block    tinyint(1)   not null,
     expire_time bigint       not null,
     create_time bigint       not null
-    );
+);

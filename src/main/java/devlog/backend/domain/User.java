@@ -10,7 +10,7 @@ public record User(
     Long createTime,
     Long updateTime
 ) {
-    
+
     public static User create(Long id, String email, String username, Long currentTime) {
         return User.builder()
             .id(id)

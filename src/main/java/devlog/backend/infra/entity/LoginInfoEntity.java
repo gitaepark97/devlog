@@ -10,11 +10,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity(name = "login_info")
+@DynamicUpdate
 public class LoginInfoEntity {
 
     @Id
@@ -31,6 +33,8 @@ public class LoginInfoEntity {
 
     private Long createTime;
 
+    private Long updateTime;
+
     public static LoginInfoEntity from(LoginInfo loginInfo) {
         return LoginInfoEntity.builder()
             .id(loginInfo.id())
@@ -39,6 +43,7 @@ public class LoginInfoEntity {
             .password(loginInfo.password())
             .userId(loginInfo.userId())
             .createTime(loginInfo.createTime())
+            .updateTime(loginInfo.updateTime())
             .build();
     }
 
@@ -50,6 +55,7 @@ public class LoginInfoEntity {
             .password(password)
             .userId(userId)
             .createTime(createTime)
+            .updateTime(updateTime)
             .build();
     }
 

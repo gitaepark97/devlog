@@ -74,4 +74,18 @@ class AuthServiceTest {
         // then
     }
 
+    @Test
+    void updatePassword_success() {
+        // given
+        String password = "Qwer1234!";
+        String newPassword = "qWer1234!";
+        Long userId = EXAMPLE_ID;
+        authService.register("test@example.com", password, "test");
+
+        // when
+        authService.updatePassword(userId, password, newPassword);
+
+        // then
+    }
+
 }

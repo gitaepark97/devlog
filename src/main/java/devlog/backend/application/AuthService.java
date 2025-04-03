@@ -54,7 +54,13 @@ public class AuthService {
         sessionWriter.delete(userId);
     }
 
+    public void updatePassword(Long userId, String oldPassword, String newPassword) {
+        // 비밀번호 변경
+        loginInfoWriter.updatePassword(userId, oldPassword, newPassword);
+    }
+
     public Optional<Long> getUserId(String accessToken) {
+        // 회원 ID 추출
         return tokenProcessor.getUserId(accessToken);
     }
 
