@@ -19,7 +19,7 @@ create table if not exists login_info (
 
 create table if not exists session (
     id          bigint       not null   primary key,
-    user_id     bigint       not null   unique,
+    user_id     bigint       not null,
     token       varchar(255) not null   unique,
     is_block    tinyint(1)   not null,
     expire_time bigint       not null,

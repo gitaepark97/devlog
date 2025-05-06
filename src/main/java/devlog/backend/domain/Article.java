@@ -23,12 +23,21 @@ public record Article(
             .build();
     }
 
-    public Article update(String title, String content, Long currentTime) {
+    public Article update(Long userId, String title, String content, Long currentTime) {
+        // 작성자 확인
+        checkIsWriter(userId);
+
         return toBuilder()
             .title(title)
             .content(content)
             .updateTime(currentTime)
             .build();
+    }
+
+    public void checkIsWriter(Long userId) {
+        if (!writerId.equals(userId)) {
+            throw new ForbiddenException();
+        }
     }
 
 }

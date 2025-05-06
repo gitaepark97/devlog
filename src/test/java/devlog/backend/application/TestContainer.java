@@ -45,12 +45,16 @@ final class TestContainer {
         uuidProvider,
         sessionRepository
     );
+    private final ArticleReader articleReader = new ArticleReader(
+        articleRepository
+    );
     private final ArticleWriter articleWriter = new ArticleWriter(
         idProvider,
         clockProvider,
         articleRepository
     );
     private final ArticleService articleService = new ArticleService(
+        articleReader,
         userReader,
         articleWriter
     );

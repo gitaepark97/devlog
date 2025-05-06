@@ -34,6 +34,9 @@ public class AuthService {
         // 회원 ID 조회
         Long userId = loginInfoReader.read(email, password).userId();
 
+        // 기존 세션 삭제
+        sessionWriter.delete(userId);
+        
         // 세션 생성
         Session newSession = sessionWriter.create(userId);
 

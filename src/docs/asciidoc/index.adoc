@@ -66,6 +66,33 @@ include::{snippets}/update-password/response-fields.adoc[]
 
 == Article
 
+=== 게시글 목록 조회
+
+==== 요청
+
+include::{snippets}/read-all-articles/http-request.adoc[]
+include::{snippets}/read-all-articles/request-headers.adoc[]
+include::{snippets}/read-all-articles/query-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/read-all-articles/http-response.adoc[]
+include::{snippets}/read-all-articles/response-fields.adoc[]
+
+=== 특정 회원 게시글 목록 조회
+
+==== 요청
+
+include::{snippets}/read-users-all-articles/http-request.adoc[]
+include::{snippets}/read-users-all-articles/request-headers.adoc[]
+include::{snippets}/read-users-all-articles/path-parameters.adoc[]
+include::{snippets}/read-users-all-articles/query-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/read-users-all-articles/http-response.adoc[]
+include::{snippets}/read-users-all-articles/response-fields.adoc[]
+
 === 게시글 작성
 
 ==== 요청
@@ -78,3 +105,30 @@ include::{snippets}/create-article/request-fields.adoc[]
 
 include::{snippets}/create-article/http-response.adoc[]
 include::{snippets}/create-article/response-fields.adoc[]
+
+=== 게시글 수정
+
+==== 요청
+
+include::{snippets}/update-article/http-request.adoc[]
+include::{snippets}/update-article/request-headers.adoc[]
+include::{snippets}/update-article/path-parameters.adoc[]
+include::{snippets}/update-article/request-fields.adoc[]
+
+==== 응답
+
+include::{snippets}/update-article/http-response.adoc[]
+include::{snippets}/update-article/response-fields.adoc[]
+
+=== 게시글 삭제
+
+==== 요청
+
+include::{snippets}/delete-article/http-request.adoc[]
+include::{snippets}/delete-article/request-headers.adoc[]
+include::{snippets}/delete-article/path-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/delete-article/http-response.adoc[]
+include::{snippets}/delete-article/response-fields.adoc[]
